@@ -138,6 +138,12 @@ Details, methodology and browser numbers in [docs/PERF.md](docs/PERF.md) (Portug
 - **TURN:** on very restrictive corporate networks calls may fail without a TURN server (e.g. [coturn](https://github.com/coturn/coturn)) in `RTC_ICE_SERVERS`.
 - Not there yet: direct messages, file uploads, roles and permissions, message editing, native apps, interface translations.
 
+## Team
+
+- [Pedro Lucas](https://github.com/webdevpls)
+- [Neri Filho](https://github.com/nerigleston)
+- [Antonio Gabriel](https://github.com/GabaDev2412)
+
 ## Contributing
 
 Issues and pull requests are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) first.

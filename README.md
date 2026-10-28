@@ -37,6 +37,7 @@
 - [Desempenho](#desempenho)
 - [Privacidade e segurança](#privacidade-e-segurança)
 - [Limitações e próximos passos](#limitações-e-próximos-passos)
+- [Equipe](#equipe)
 - [Como contribuir](#como-contribuir)
 - [Licença e marca](#licença-e-marca)
 
@@ -163,6 +164,12 @@ Detalhes, metodologia e números do navegador em [docs/PERF.md](docs/PERF.md).
 - Ainda não tem: mensagens diretas, envio de arquivos, cargos e permissões, edição de mensagens e apps nativos.
 
 Quer ajudar com algum desses? Veja abaixo.
+
+## Equipe
+
+- [Pedro Lucas](https://github.com/webdevpls)
+- [Neri Filho](https://github.com/nerigleston)
+- [Antonio Gabriel](https://github.com/GabaDev2412)
 
 ## Como contribuir
 
