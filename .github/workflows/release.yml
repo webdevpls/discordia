@@ -39,15 +39,53 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+  # App de Mac universal (Apple Silicon + Intel), assinado ad-hoc.
+  desktop:
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: desktop
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: desktop/package-lock.json
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: desktop/src-tauri
+      - run: npm ci
+      - run: npx tauri build --target universal-apple-darwin --bundles app,dmg
+      - name: Empacotar
+        run: |
+          B=src-tauri/target/universal-apple-darwin/release/bundle
+          codesign --verify --deep --strict "$B/macos/Discordia.app"
+          mkdir -p ../out
+          ditto -c -k --keepParent "$B/macos/Discordia.app" ../out/Discordia.zip
+          cp "$B"/dmg/*.dmg ../out/Discordia.dmg
+      - uses: actions/upload-artifact@v4
+        with:
+          name: desktop
+          path: out
+
   release:
-    needs: image
+    needs: [image, desktop]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Criar release com as notas do CHANGELOG
+      - uses: actions/download-artifact@v4
+        with:
+          name: desktop
+          path: out
+      - name: Criar release com as notas do CHANGELOG e o app de Mac
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ github.ref_name }}
         run: |
           awk -v v="${TAG#v}" '$0 ~ "^## \\[?"v"\\]?" {on=1; next} on && /^## / {exit} on' CHANGELOG.md > notes.md
-          gh release create "$TAG" --title "$TAG" --notes-file notes.md --verify-tag
+          (cd out && shasum -a 256 Discordia.zip Discordia.dmg > SHA256SUMS.txt && cat SHA256SUMS.txt)
+          gh release create "$TAG" --title "$TAG" --notes-file notes.md --verify-tag out/Discordia.zip out/Discordia.dmg out/SHA256SUMS.txt

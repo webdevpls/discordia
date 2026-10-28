@@ -30,6 +30,7 @@
 ## Sumário
 
 - [Recursos](#recursos)
+- [App de Mac](#app-de-mac)
 - [Hospedando o seu](#hospedando-o-seu)
 - [Configuração](#configuração)
 - [Desenvolvimento](#desenvolvimento)
@@ -57,6 +58,20 @@
   <img src="docs/call.png" alt="Chamada de voz" width="49%">
   <img src="docs/stream-menu.png" alt="Menu de volume da tela compartilhada" width="49%">
 </p>
+
+## App de Mac
+
+Abra o **Terminal** (⌘ Espaço → "Terminal"), cole a linha abaixo e aperte Enter:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/webdevpls/discordia/main/install.sh | bash
+```
+
+O script baixa a última versão, confere a integridade, instala o Discordia em **Aplicativos** e abre o app, sem o aviso de segurança do macOS. Você pode [ver o que ele faz](install.sh) antes de rodar. Para atualizar, é só rodar de novo.
+
+Na primeira vez, o app pergunta o endereço do servidor (dá para trocar depois em **Discordia → Trocar servidor…**). Na primeira chamada, permita o microfone e a câmera.
+
+O app tem cerca de 3 MB e usa o motor web do próprio macOS (WebKit), por isso pesa bem menos que um navegador. Funciona no macOS 13 ou mais novo, em Apple Silicon e Intel. Prefere baixar à mão? O `.dmg` está nas [releases](https://github.com/webdevpls/discordia/releases/latest).
 
 ## Hospedando o seu
 
@@ -126,6 +141,8 @@ frontend/           React + Vite + TypeScript
   src/lib/rtc.ts    sessão WebRTC, adaptação à rede e detecção de fala
   src/lib/noise.ts  supressão de ruído (RNNoise)
   perf/             script de medição WebRTC (funciona no Discordia e no Google Meet)
+desktop/            app de Mac (Tauri): janela nativa que abre o servidor escolhido
+  measure.sh        compara CPU e RAM do app com o Chrome numa chamada
 ```
 
 ## Como funciona

@@ -46,6 +46,20 @@
   <img src="docs/stream-menu.png" alt="Shared screen volume menu" width="49%">
 </p>
 
+## Mac app
+
+Open **Terminal** (⌘ Space → "Terminal"), paste the line below and press Enter:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/webdevpls/discordia/main/install.sh | bash
+```
+
+The script downloads the latest version, verifies it, installs Discordia into **Applications** and opens it, without the macOS security warning. You can [read what it does](install.sh) first. Run it again to update.
+
+On first launch the app asks for your server address (change it later via **Discordia → Trocar servidor…**). On your first call, allow the microphone and camera.
+
+The app is about 3 MB and uses macOS's own web engine (WebKit), so it is much lighter than a browser. Requires macOS 13 or newer, Apple Silicon or Intel. Prefer a manual download? The `.dmg` is in the [releases](https://github.com/webdevpls/discordia/releases/latest).
+
 ## Self-hosting
 
 You need a server with Docker (any 1 vCPU / 1 GB VPS is enough for small groups) and a domain pointing to it.

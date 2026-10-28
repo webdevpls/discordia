@@ -241,14 +241,21 @@ export class VoiceSession {
       delete this.tracks[src]
     }
 
+    // A live transceiver just swaps tracks (e.g. a new mic). Once a source stops,
+    // its transceiver is retired: the SFU (Pion) ends the remote track when the
+    // m-line goes inactive and never fires OnTrack again for it, so restarting
+    // the source (sharing the screen a second time) needs a fresh transceiver.
     const t = this.tx[src]
-    if (track && !t) {
+    if (track && t) {
+      await t.sender.replaceTrack(track)
+    } else if (track) {
       const created = this.pub.addTransceiver(track, { direction: 'sendonly' })
       if (track.kind === 'video') preferH264(created)
       this.tx[src] = created
     } else if (t) {
-      await t.sender.replaceTrack(track)
-      t.direction = track ? 'sendonly' : 'inactive'
+      await t.sender.replaceTrack(null)
+      t.direction = 'inactive'
+      delete this.tx[src]
     }
 
     if (src !== 'screen-audio') {
@@ -265,7 +272,7 @@ export class VoiceSession {
   onEnded?: (src: Source) => void
 
   private async negotiatePub() {
-    if (Object.keys(this.tx).length === 0) return
+    if (this.pub.getTransceivers().length === 0) return
     if (this.pubBusy) {
       this.pubPending = true
       return
@@ -333,9 +340,7 @@ export class VoiceSession {
    */
   private async sampleQuality() {
     if (this.closed || this.pub.connectionState !== 'connected') return
-    let avail: number | null = null
     let upLoss = 0
-    let bwLimited = false
     const report = await this.pub.getStats()
     // The pair actually carrying media is the transport's selected one; "nominated"
     // can match stale pairs from earlier ICE checks.
@@ -347,11 +352,9 @@ export class VoiceSession {
     // Ping to the server: ICE consent checks give currentRoundTripTime; RTCP receiver
     // reports (remote-inbound-rtp.roundTripTime) are the fallback when it's missing.
     let rtt: number | null = pair?.currentRoundTripTime != null ? pair.currentRoundTripTime * 1000 : null
-    avail = pair?.availableOutgoingBitrate ?? null
     report.forEach((s) => {
       if (s.type === 'remote-inbound-rtp' && s.fractionLost != null) upLoss = Math.max(upLoss, s.fractionLost)
       if (s.type === 'remote-inbound-rtp' && rtt === null && s.roundTripTime != null) rtt = s.roundTripTime * 1000
-      if (s.type === 'outbound-rtp' && s.kind === 'video' && s.qualityLimitationReason === 'bandwidth') bwLimited = true
     })
 
     let downLoss = 0
@@ -370,14 +373,14 @@ export class VoiceSession {
       this.lastIn = { lost, recv }
     }
 
+    // Only loss and RTT count. The browser's bandwidth estimate starts low whenever
+    // video turns on after an audio-only stretch (and stays low once we cap the
+    // bitrate), which looked like a weak link on perfect networks. The browser
+    // already adapts its send rate under our cap on its own.
     const loss = Math.max(upLoss, downLoss)
-    const sendingVideo = !!(this.tracks.camera || this.tracks.screen)
-    // Bandwidth hints only count while healthy: once we cap our own bitrate the
-    // estimate stops growing, and we'd never recover. Loss and RTT decide recovery.
-    const useBw = sendingVideo && this.level === 'good' && this.samples >= 3
     let seen: Level = 'good'
-    if (loss >= 0.08 || (rtt ?? 0) >= 500 || (useBw && avail !== null && avail < 150_000)) seen = 'poor'
-    else if (loss >= 0.03 || (rtt ?? 0) >= 250 || (useBw && ((avail !== null && avail < 350_000) || bwLimited))) seen = 'fair'
+    if (loss >= 0.08 || (rtt ?? 0) >= 500) seen = 'poor'
+    else if (loss >= 0.03 || (rtt ?? 0) >= 250) seen = 'fair'
     this.samples++
 
     if (seen !== this.level && this.samples > 2) {

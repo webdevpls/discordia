@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Discordia</title>
+    <style>
+      :root {
+        --bg: #0c0c0e;
+        --raised: #18181c;
+        --line: rgba(255, 255, 255, 0.08);
+        --text: #ececf1;
+        --muted: #8b8b96;
+        --accent: #7b7bff;
+        --danger: #f2555a;
+        color-scheme: dark;
+      }
+      @media (prefers-color-scheme: light) {
+        :root {
+          --bg: #f4f4f6;
+          --raised: #ffffff;
+          --line: rgba(0, 0, 0, 0.08);
+          --text: #18181b;
+          --muted: #6b6b76;
+          --accent: #5b5bd6;
+          color-scheme: light;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+      body {
+        display: grid;
+        place-items: center;
+        padding: 16px;
+        background: var(--bg);
+        color: var(--text);
+        font: 14px/1.45 -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -webkit-user-select: none;
+        user-select: none;
+      }
+      form {
+        width: 100%;
+        max-width: 380px;
+        display: grid;
+        gap: 12px;
+      }
+      .logo {
+        width: 48px;
+        height: 48px;
+        margin-bottom: 8px;
+      }
+      h1 {
+        margin: 0;
+        font-size: 22px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+      p {
+        margin: 0 0 8px;
+        color: var(--muted);
+      }
+      input {
+        width: 100%;
+        height: 42px;
+        padding: 0 12px;
+        border-radius: 8px;
+        border: 1px solid var(--line);
+        background: var(--raised);
+        color: var(--text);
+        font: inherit;
+        outline: none;
+        -webkit-user-select: text;
+        user-select: text;
+      }
+      input:focus {
+        border-color: var(--accent);
+      }
+      button {
+        height: 40px;
+        border: 0;
+        border-radius: 8px;
+        background: var(--accent);
+        color: #fff;
+        font: inherit;
+        font-weight: 500;
+        cursor: pointer;
+      }
+      button:disabled {
+        opacity: 0.6;
+        cursor: default;
+      }
+      .error {
+        min-height: 18px;
+        color: var(--danger);
+        font-size: 13px;
+      }
+      small {
+        color: var(--muted);
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <form id="form">
+      <svg class="logo" viewBox="0 0 32 32" aria-hidden="true">
+        <rect width="32" height="32" rx="9" fill="#5b5bd6" />
+        <path d="M10 11.5c0-1.4 1.1-2.5 2.5-2.5h7c1.4 0 2.5 1.1 2.5 2.5v6c0 1.4-1.1 2.5-2.5 2.5H15l-3.6 2.8c-.5.4-1.4 0-1.4-.7z" fill="#fff" />
+      </svg>
+      <div>
+        <h1>Conectar a um servidor</h1>
+        <p>Digite o endereço do Discordia que você usa.</p>
+      </div>
+      <input id="url" type="text" inputmode="url" autocomplete="url" spellcheck="false" placeholder="discordia.exemplo.com" aria-label="Endereço do servidor" />
+      <div class="error" id="error" role="alert"></div>
+      <button id="go">Conectar</button>
+      <small>Dá para trocar depois pelo menu Discordia → Trocar servidor…</small>
+    </form>
+    <script>
+      const { invoke } = window.__TAURI__.core
+      const input = document.getElementById('url')
+      const error = document.getElementById('error')
+      const go = document.getElementById('go')
+
+      invoke('current_server').then((url) => {
+        input.value = url.replace(/\/$/, '')
+        input.focus()
+        input.select()
+      })
+
+      document.getElementById('form').addEventListener('submit', async (e) => {
+        e.preventDefault()
+        error.textContent = ''
+        go.disabled = true
+        go.textContent = 'Conectando…'
+        try {
+          await invoke('connect', { url: input.value })
+        } catch (err) {
+          error.textContent = String(err)
+          go.disabled = false
+          go.textContent = 'Conectar'
+        }
+      })
+    </script>
+  </body>
+</html>

@@ -1,4 +1,4 @@
-import { HeadphoneOff, Headphones, Maximize2, Mic, MicOff, Minimize2, MonitorUp, PhoneOff, SlidersHorizontal, Video, VideoOff, Volume1, Volume2, VolumeX } from 'lucide-react'
+import { Columns2, HeadphoneOff, Headphones, LayoutGrid, Maximize2, Mic, MicOff, Minimize2, MonitorUp, PhoneOff, Rows2, SlidersHorizontal, Video, VideoOff, Volume1, Volume2, VolumeX } from 'lucide-react'
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type MouseEvent } from 'react'
 import { streamKey } from '../lib/rtc'
 import type { Channel, VoiceUser } from '../lib/types'
@@ -7,6 +7,24 @@ import { Avatar } from './Avatar'
 
 type Tile = { id: string; user: VoiceUser; kind: 'user' | 'screen' }
 type Menu = { tile: Tile; x: number; y: number }
+
+/** How several shared screens are arranged; each viewer picks their own. */
+type ScreenLayout = 'side' | 'stack' | 'grid'
+const LAYOUT_KEY = 'discordia.screenLayout'
+const LAYOUTS: { id: ScreenLayout; label: string; Icon: typeof Columns2 }[] = [
+  { id: 'side', label: 'Lado a lado', Icon: Columns2 },
+  { id: 'stack', label: 'Um embaixo do outro', Icon: Rows2 },
+  { id: 'grid', label: 'Grade', Icon: LayoutGrid },
+]
+
+function recallLayout(): ScreenLayout {
+  try {
+    const v = localStorage.getItem(LAYOUT_KEY)
+    return v === 'stack' || v === 'grid' ? v : 'side'
+  } catch {
+    return 'side'
+  }
+}
 type TileEvents = { onClick: () => void; onMenu: (tile: Tile, x: number, y: number) => void }
 
 export function Stage({ channel }: { channel: Channel }) {
@@ -15,6 +33,7 @@ export function Stage({ channel }: { channel: Channel }) {
   const me = useStore((s) => s.me)
   const [focus, setFocus] = useState<string | null>(null)
   const [menu, setMenu] = useState<Menu | null>(null)
+  const [layout, setLayout] = useState<ScreenLayout>(recallLayout)
   const here = voice?.channelId === channel.id
 
   // Ask the SFU only for videos that have a tile on screen. Leaving this view
@@ -53,10 +72,45 @@ export function Stage({ channel }: { channel: Channel }) {
   const focused = tiles.find((t) => t.id === focus)
   const toggleFocus = (id: string) => setFocus((f) => (f === id ? null : id))
   const openMenu = (tile: Tile, x: number, y: number) => setMenu({ tile, x, y })
+  const pickLayout = (l: ScreenLayout) => {
+    setLayout(l)
+    try {
+      localStorage.setItem(LAYOUT_KEY, l)
+    } catch {
+      /* ignore */
+    }
+  }
+  const screens = tiles.filter((t) => t.kind === 'screen')
+  const split = !focused && screens.length >= 2 && layout !== 'grid'
 
   return (
     <div className="stage">
-      {focused ? (
+      {!focused && screens.length >= 2 && (
+        <div className="stage-bar" role="radiogroup" aria-label="Layout das telas">
+          {LAYOUTS.map(({ id, label, Icon }) => (
+            <button key={id} role="radio" aria-checked={layout === id} title={label} className={layout === id ? 'on' : ''} onClick={() => pickLayout(id)}>
+              <Icon size={16} />
+              <span>{label}</span>
+            </button>
+          ))}
+        </div>
+      )}
+      {split ? (
+        <div className="focus">
+          <div className={`screen-split ${layout}`}>
+            {screens.map((t) => (
+              <TileView key={t.id} tile={t} onClick={() => toggleFocus(t.id)} onMenu={openMenu} />
+            ))}
+          </div>
+          <div className="strip">
+            {tiles
+              .filter((t) => t.kind !== 'screen')
+              .map((t) => (
+                <TileView key={t.id} tile={t} onClick={() => toggleFocus(t.id)} onMenu={openMenu} />
+              ))}
+          </div>
+        </div>
+      ) : focused ? (
         <div className="focus">
           <TileView tile={focused} onClick={() => toggleFocus(focused.id)} onMenu={openMenu} />
           <div className="strip">
