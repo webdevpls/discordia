@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 # Uma imagem só: o servidor Go serve a API, o WebSocket, o SFU e o frontend compilado.
 
-FROM --platform=$BUILDPLATFORM node:22-alpine AS web
+FROM --platform=$BUILDPLATFORM node:26-alpine AS web
 WORKDIR /web
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci
