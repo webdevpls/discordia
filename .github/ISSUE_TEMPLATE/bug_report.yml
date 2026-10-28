@@ -1,0 +1,42 @@
+name: Bug
+description: Algo não funciona como deveria
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: O que aconteceu?
+      description: E o que você esperava que acontecesse.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Como reproduzir
+      placeholder: |
+        1. Entrar no canal de voz
+        2. Compartilhar a tela
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Navegador e sistema
+      placeholder: Chrome 141 no macOS 26
+    validations:
+      required: true
+  - type: dropdown
+    id: hosting
+    attributes:
+      label: Como você está rodando?
+      options:
+        - Docker (compose.yaml)
+        - make dev / código-fonte
+        - Outro
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Console do navegador (⌥⌘J / Ctrl+Shift+J) e/ou `docker compose logs discordia`.
+      render: text
