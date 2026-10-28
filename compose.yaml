@@ -1,0 +1,37 @@
+# Hospedagem própria: `docker compose up -d` (configure o .env antes, veja .env.example).
+services:
+  discordia:
+    image: ghcr.io/webdevpls/discordia:latest
+    build: .
+    environment:
+      RTC_PUBLIC_IP: ${RTC_PUBLIC_IP:-}
+      RTC_ICE_SERVERS: ${RTC_ICE_SERVERS:-stun:stun.l.google.com:19302}
+      ALLOWED_ORIGINS: ${DOMAIN:-localhost}
+    ports:
+      - "127.0.0.1:8080:8080" # acesso local direto, sem HTTPS (localhost já é contexto seguro)
+      - "7882:7882/udp" # mídia WebRTC: libere no firewall
+    volumes:
+      - discordia-data:/data
+    restart: unless-stopped
+
+  # HTTPS automático (Let's Encrypt) na frente do app.
+  caddy:
+    image: caddy:2-alpine
+    environment:
+      DOMAIN: ${DOMAIN:-localhost}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - discordia
+    restart: unless-stopped
+
+volumes:
+  discordia-data:
+  caddy-data:
+  caddy-config:
