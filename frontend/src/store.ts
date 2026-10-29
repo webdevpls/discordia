@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { api, getToken, setToken } from './lib/api'
 import { Gateway } from './lib/gateway'
 import { VoiceSession, type Quality } from './lib/rtc'
+import { setSoundOutput, sounds } from './lib/sounds'
 import type { Channel, Group, Member, Message, User, VoiceUser } from './lib/types'
 
 type GroupDetail = { channels: Channel[]; members: Member[] }
@@ -371,6 +372,7 @@ if (typeof document !== 'undefined') document.addEventListener('visibilitychange
 
 export function leaveVoice() {
   if (!session) return
+  if (!get().voice?.deafened) sounds.selfLeave()
   gateway?.send('voice.leave')
   endSession()
 }
@@ -441,6 +443,7 @@ export async function toggleNoiseSuppression() {
 export function setAudioOutput(deviceId: string) {
   set({ audioOutput: deviceId })
   rememberDevices()
+  setSoundOutput(deviceId)
 }
 
 export async function toggleCamera() {
@@ -520,14 +523,31 @@ function onEvent(t: string, d: any) {
       break
     }
     case 'voice.state': {
+      // Chime when someone else joins or leaves the call I'm in. Without a previous
+      // snapshot (just reconnected) there's nothing to compare, so stay quiet.
+      const prev = s.voiceStates[d.channel_id]
+      if (s.voice && s.voice.channelId === d.channel_id && prev && !s.voice.deafened) {
+        const others = (list: VoiceUser[]) => new Set(list.map((u) => u.user_id).filter((id) => id !== s.me?.id))
+        const before = others(prev)
+        const after = others(d.users)
+        if ([...after].some((id) => !before.has(id))) sounds.join()
+        else if ([...before].some((id) => !after.has(id))) sounds.leave()
+      }
       const voiceStates = { ...s.voiceStates }
       if (d.users.length) voiceStates[d.channel_id] = d.users
       else delete voiceStates[d.channel_id]
       set({ voiceStates })
       break
     }
+    case 'voice.joined':
+      if (session?.channelId === d.channel_id) {
+        setSoundOutput(s.audioOutput)
+        sounds.selfJoin()
+      }
+      break
     case 'voice.left':
       if (session && session.channelId === d.channel_id) {
+        if (!s.voice?.deafened) sounds.selfLeave()
         endSession()
         if (d.reason) toast('Conexão de voz perdida')
       }
