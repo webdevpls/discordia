@@ -1,13 +1,53 @@
 {
   "name": "discordia-desktop",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
+  "description": "Discordia desktop",
+  "author": "Vision Tech",
+  "license": "AGPL-3.0-only",
+  "main": "main.js",
   "scripts": {
-    "tauri": "tauri",
-    "dev": "tauri dev",
-    "build": "tauri build --bundles app"
+    "dev": "electron .",
+    "build": "electron-builder --mac --universal"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^2.12.4"
+    "electron": "^45.1.0",
+    "electron-builder": "^26.18.0"
+  },
+  "build": {
+    "appId": "com.visiontech.discordia",
+    "productName": "Discordia",
+    "copyright": "Vision Tech",
+    "files": [
+      "main.js",
+      "preload.js",
+      "ui/**"
+    ],
+    "directories": {
+      "buildResources": "build"
+    },
+    "mac": {
+      "category": "public.app-category.social-networking",
+      "target": [
+        "dir",
+        "zip",
+        "dmg"
+      ],
+      "icon": "build/icon.icns",
+      "minimumSystemVersion": "13.0",
+      "identity": "-",
+      "hardenedRuntime": true,
+      "entitlements": "build/entitlements.plist",
+      "entitlementsInherit": "build/entitlements.plist",
+      "extendInfo": {
+        "NSMicrophoneUsageDescription": "O Discordia usa o microfone nas chamadas de voz.",
+        "NSCameraUsageDescription": "O Discordia usa a câmera quando você liga o vídeo numa chamada.",
+        "NSAudioCaptureUsageDescription": "O Discordia envia o som do computador quando você compartilha a tela com som."
+      },
+      "artifactName": "Discordia-${version}-mac.${ext}"
+    },
+    "dmg": {
+      "artifactName": "Discordia.dmg"
+    }
   }
 }

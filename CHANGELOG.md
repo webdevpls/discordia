@@ -2,6 +2,16 @@
 
 O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o projeto usa [versionamento semântico](https://semver.org/lang/pt-BR/).
 
+## [0.3.0] - 2026-10-29
+
+### Adicionado
+
+- **Seletor de tela no estilo Discord.** No app de Mac, o botão de compartilhar abre um modal próprio com miniaturas ao vivo das telas e janelas e a opção de mandar o som do computador junto, sem passar pela seleção do sistema. No navegador, o modal pergunta antes se é uma aba, uma janela ou a tela inteira e se vai com som; o Chrome abre a seleção dele já no tipo certo e com o som marcado.
+
+### Alterado
+
+- O app de Mac agora é feito em Electron (antes Tauri/WebKit). O WebKit não captura o som no compartilhamento de tela e não permite um seletor próprio. O download ficou maior (cerca de 100 MB).
+
 ## [0.2.0] - 2026-10-28
 
 ### Adicionado
@@ -36,5 +46,6 @@ Primeira versão pública.
 - Imagem Docker única e `compose.yaml` com HTTPS automático via Caddy.
 - Ferramenta de teste de carga do SFU e script de medição WebRTC.
 
+[0.3.0]: https://github.com/webdevpls/discordia/releases/tag/v0.3.0
 [0.2.0]: https://github.com/webdevpls/discordia/releases/tag/v0.2.0
 [0.1.0]: https://github.com/webdevpls/discordia/releases/tag/v0.1.0

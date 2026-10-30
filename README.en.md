@@ -58,7 +58,7 @@ The script downloads the latest version, verifies it, installs Discordia into **
 
 On first launch the app asks for your server address (change it later via **Discordia → Trocar servidor…**). On your first call, allow the microphone and camera.
 
-The app is about 3 MB and uses macOS's own web engine (WebKit), so it is much lighter than a browser. Requires macOS 13 or newer, Apple Silicon or Intel. Prefer a manual download? The `.dmg` is in the [releases](https://github.com/webdevpls/discordia/releases/latest).
+The app is built with Electron and has a Discord-style screen picker: choose a screen or window from live thumbnails and whether to send its audio. Requires macOS 13 or newer, Apple Silicon or Intel. Prefer a manual download? The `.dmg` is in the [releases](https://github.com/webdevpls/discordia/releases/latest).
 
 ## Self-hosting
 

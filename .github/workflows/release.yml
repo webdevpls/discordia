@@ -52,21 +52,15 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: desktop/package-lock.json
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: aarch64-apple-darwin,x86_64-apple-darwin
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: desktop/src-tauri
       - run: npm ci
-      - run: npx tauri build --target universal-apple-darwin --bundles app,dmg
+      - run: npx electron-builder --mac --universal --publish never
       - name: Empacotar
         run: |
-          B=src-tauri/target/universal-apple-darwin/release/bundle
-          codesign --verify --deep --strict "$B/macos/Discordia.app"
+          APP=dist/mac-universal/Discordia.app
+          codesign --verify --deep --strict "$APP"
           mkdir -p ../out
-          ditto -c -k --keepParent "$B/macos/Discordia.app" ../out/Discordia.zip
-          cp "$B"/dmg/*.dmg ../out/Discordia.dmg
+          ditto -c -k --keepParent "$APP" ../out/Discordia.zip
+          cp dist/Discordia.dmg ../out/Discordia.dmg
       - uses: actions/upload-artifact@v7
         with:
           name: desktop

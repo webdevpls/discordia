@@ -4,6 +4,7 @@ import { Auth } from './components/Auth'
 import { Chat } from './components/Chat'
 import { Members } from './components/Members'
 import { Rail } from './components/Rail'
+import { ScreenPicker } from './components/ScreenPicker'
 import { Sidebar } from './components/Sidebar'
 import { AudioSink, Stage } from './components/Stage'
 import { boot, useStore } from './store'
@@ -12,6 +13,7 @@ export default function App() {
   const me = useStore((s) => s.me)
   const booting = useStore((s) => s.booting)
   const toast = useStore((s) => s.toast)
+  const screenPicker = useStore((s) => s.screenPicker)
 
   useEffect(() => {
     void boot()
@@ -22,6 +24,7 @@ export default function App() {
     <>
       {me ? <Shell /> : <Auth />}
       <AudioSink />
+      {screenPicker && <ScreenPicker />}
       {toast && (
         <div className="toast" role="status">
           {toast}

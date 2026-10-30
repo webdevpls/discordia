@@ -2,6 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+  <!-- O V8 do Electron precisa de JIT com o hardened runtime. -->
+  <key>com.apple.security.cs.allow-jit</key>
+  <true/>
+  <!-- Assinatura ad-hoc: sem isto o macOS recusa carregar o framework do Electron. -->
+  <key>com.apple.security.cs.disable-library-validation</key>
+  <true/>
   <!-- Com o hardened runtime, o macOS só libera microfone e câmera se o app declarar. -->
   <key>com.apple.security.device.audio-input</key>
   <true/>

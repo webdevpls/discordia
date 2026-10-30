@@ -1,6 +1,6 @@
 name: Desktop
 
-# Confere que o app de Mac compila quando o código dele muda.
+# Confere que o app de Mac empacota quando o código dele muda.
 on:
   push:
     branches: [main]
@@ -16,11 +16,14 @@ jobs:
     runs-on: macos-latest
     defaults:
       run:
-        working-directory: desktop/src-tauri
+        working-directory: desktop
     steps:
       - uses: actions/checkout@v7
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
+      - uses: actions/setup-node@v4
         with:
-          workspaces: desktop/src-tauri
-      - run: cargo check --locked
+          node-version: 22
+          cache: npm
+          cache-dependency-path: desktop/package-lock.json
+      - run: npm ci
+      - run: node --check main.js && node --check preload.js
+      - run: npx electron-builder --mac --dir --publish never

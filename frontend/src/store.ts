@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { api, getToken, setToken } from './lib/api'
 import { Gateway } from './lib/gateway'
-import { VoiceSession, type Quality } from './lib/rtc'
+import { VoiceSession, type Quality, type ScreenOptions } from './lib/rtc'
 import { setSoundOutput, sounds } from './lib/sounds'
 import type { Channel, Group, Member, Message, User, VoiceUser } from './lib/types'
 
@@ -45,6 +45,8 @@ type State = {
   netQuality: Quality | null
   /** Listener-side volume per audio stream ("userId|mic", "userId|screen-audio"), 0..1, saved per machine. */
   volumes: Record<string, number>
+  /** The "share your screen" picker is open. */
+  screenPicker: boolean
 }
 
 const initial: State = {
@@ -68,6 +70,7 @@ const initial: State = {
   toast: null,
   netQuality: null,
   volumes: recallVolumes(),
+  screenPicker: false,
   ...recallDevices(),
 }
 
@@ -381,7 +384,7 @@ function endSession() {
   session?.close()
   session = null
   videoSent = null
-  if (get().voice) set({ voice: null, streams: {}, speaking: {}, netQuality: null })
+  if (get().voice) set({ voice: null, streams: {}, speaking: {}, netQuality: null, screenPicker: false })
 }
 
 function patchVoice(p: Partial<VoiceUI>) {
@@ -455,10 +458,31 @@ export async function toggleCamera() {
   }
 }
 
+/** Stops the share, or opens the picker to start one. */
 export async function toggleScreen() {
   if (!session) return
+  if (get().voice?.screen) {
+    await session.stopScreen()
+    patchVoice({ screen: false })
+  } else {
+    openScreenPicker()
+  }
+}
+
+export function openScreenPicker() {
+  if (session) set({ screenPicker: true })
+}
+
+export function closeScreenPicker() {
+  set({ screenPicker: false })
+}
+
+export async function shareScreen(opts: ScreenOptions) {
+  if (!session) return
+  set({ screenPicker: false })
   try {
-    patchVoice({ screen: await session.toggleScreen() })
+    await session.startScreen(opts)
+    patchVoice({ screen: true })
   } catch (err) {
     if ((err as DOMException)?.name !== 'NotAllowedError') toast('Não foi possível compartilhar a tela')
   }

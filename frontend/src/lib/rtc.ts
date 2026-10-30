@@ -6,6 +6,9 @@ type Send = (t: string, d?: unknown) => void
 export type Level = 'good' | 'fair' | 'poor'
 export type Quality = { level: Level; rtt: number | null; loss: number }
 
+/** surface is only a hint for the browser's picker; the desktop app selects the source beforehand. */
+export type ScreenOptions = { audio: boolean; surface?: 'browser' | 'window' | 'monitor' }
+
 export type SessionEvents = {
   /** key is "userId|source"; stream null means it ended. */
   onStream(key: string, stream: MediaStream | null): void
@@ -204,19 +207,32 @@ export class VoiceSession {
     return true
   }
 
-  async toggleScreen(): Promise<boolean> {
-    if (this.tracks.screen) {
-      await this.setSource('screen', null)
-      await this.setSource('screen-audio', null)
-      return false
-    }
-    const stream = await navigator.mediaDevices.getDisplayMedia({ video: { frameRate: { ideal: 30, max: 30 } }, audio: true })
-    const video = stream.getVideoTracks()[0]
-    video.contentHint = 'detail'
-    await this.setSource('screen', video)
-    const audio = stream.getAudioTracks()[0]
-    if (audio) await this.setSource('screen-audio', audio)
-    return true
+  async stopScreen() {
+    await this.setSource('screen', null)
+    await this.setSource('screen-audio', null)
+  }
+
+  /**
+   * In the desktop app the source was already chosen in our picker, so getDisplayMedia
+   * returns it directly. In Chromium the hints preselect the tab/window/screen pane
+   * and the "share audio" checkbox of the browser's own picker.
+   */
+  async startScreen(opts: ScreenOptions) {
+    const video: MediaTrackConstraints & { displaySurface?: string } = { frameRate: { ideal: 30, max: 30 } }
+    if (opts.surface) video.displaySurface = opts.surface
+    const stream = await navigator.mediaDevices.getDisplayMedia({
+      video,
+      audio: opts.audio ? { suppressLocalAudioPlayback: false } : false,
+      systemAudio: opts.audio ? 'include' : 'exclude',
+      selfBrowserSurface: 'exclude',
+      surfaceSwitching: 'include',
+      monitorTypeSurfaces: 'include',
+    } as DisplayMediaStreamOptions)
+    // Choosing again while sharing swaps the track in place, so viewers keep the tile.
+    const track = stream.getVideoTracks()[0]
+    track.contentHint = 'detail'
+    await this.setSource('screen', track)
+    await this.setSource('screen-audio', stream.getAudioTracks()[0] ?? null)
   }
 
   /** Starts, swaps or stops one outgoing source, reusing its transceiver. */

@@ -1183,6 +1183,104 @@ button {
   background: var(--accent-soft);
   color: var(--text);
 }
+/* screen share picker */
+.modal.wide {
+  max-width: 720px;
+}
+.modal .toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  color: var(--text);
+  text-align: left;
+}
+.modal .toggle-row:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.modal .toggle-row small {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+}
+.modal .hint {
+  font-size: 12.5px;
+}
+.surfaces {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.surfaces button {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 16px 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+.surfaces button.sel,
+.source.sel {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--text);
+}
+.sources {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  max-height: min(52vh, 440px);
+  min-height: 140px;
+  overflow-y: auto;
+  align-content: start;
+}
+.sources-empty {
+  grid-column: 1 / -1;
+  place-self: center;
+  color: var(--muted);
+}
+.source {
+  display: grid;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  text-align: left;
+}
+.source:hover {
+  background: var(--hover);
+}
+.source > img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+  border-radius: 6px;
+  background: var(--tile);
+}
+.source span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  font-size: 13px;
+}
+.source em {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-style: normal;
+}
+.source-icon {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
 .code {
   display: flex;
   gap: 8px;

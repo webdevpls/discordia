@@ -35,7 +35,7 @@ DEST="${DISCORDIA_INSTALL_DIR:-/Applications}"
 [ -w "$DEST" ] || DEST="$HOME/Applications"
 mkdir -p "$DEST"
 
-pkill -f "$DEST/Discordia.app/Contents/MacOS/discordia" 2>/dev/null || true
+pkill -f "$DEST/Discordia.app/Contents/MacOS/" 2>/dev/null || true
 rm -rf "$DEST/Discordia.app"
 ditto "$APP" "$DEST/Discordia.app"
 xattr -dr com.apple.quarantine "$DEST/Discordia.app" 2>/dev/null || true

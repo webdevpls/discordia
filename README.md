@@ -71,7 +71,7 @@ O script baixa a última versão, confere a integridade, instala o Discordia em 
 
 Na primeira vez, o app pergunta o endereço do servidor (dá para trocar depois em **Discordia → Trocar servidor…**). Na primeira chamada, permita o microfone e a câmera.
 
-O app tem cerca de 3 MB e usa o motor web do próprio macOS (WebKit), por isso pesa bem menos que um navegador. Funciona no macOS 13 ou mais novo, em Apple Silicon e Intel. Prefere baixar à mão? O `.dmg` está nas [releases](https://github.com/webdevpls/discordia/releases/latest).
+O app é feito em Electron e tem um seletor de tela igual ao do Discord: escolha a tela ou a janela pelas miniaturas e se quer mandar o som junto. Funciona no macOS 13 ou mais novo, em Apple Silicon e Intel. Prefere baixar à mão? O `.dmg` está nas [releases](https://github.com/webdevpls/discordia/releases/latest).
 
 ## Hospedando o seu
 
@@ -141,7 +141,7 @@ frontend/           React + Vite + TypeScript
   src/lib/rtc.ts    sessão WebRTC, adaptação à rede e detecção de fala
   src/lib/noise.ts  supressão de ruído (RNNoise)
   perf/             script de medição WebRTC (funciona no Discordia e no Google Meet)
-desktop/            app de Mac (Tauri): janela nativa que abre o servidor escolhido
+desktop/            app de Mac (Electron): abre o servidor escolhido e traz o seletor de tela
   measure.sh        compara CPU e RAM do app com o Chrome numa chamada
 ```
 
