@@ -40,8 +40,15 @@ rm -rf "$DEST/Discordia.app"
 ditto "$APP" "$DEST/Discordia.app"
 xattr -dr com.apple.quarantine "$DEST/Discordia.app" 2>/dev/null || true
 
+# A assinatura é ad-hoc, então cada versão nova é um "app diferente" para o macOS:
+# a permissão antiga de gravação de tela fica inválida e o app não lista as telas.
+# Zerar faz o macOS perguntar de novo, limpo, na primeira vez que for preciso.
+for service in ScreenCapture Camera Microphone AudioCapture; do
+  tccutil reset "$service" com.visiontech.discordia >/dev/null 2>&1 || true
+done
+
 echo "✓ Discordia instalado em $DEST."
 if [ -z "${DISCORDIA_NO_OPEN:-}" ]; then
-  echo "  Abrindo… Na primeira chamada, permita o microfone e a câmera."
+  echo "  Abrindo… O macOS vai pedir de novo o microfone, a câmera e a gravação de tela: é só permitir."
   open "$DEST/Discordia.app"
 fi
