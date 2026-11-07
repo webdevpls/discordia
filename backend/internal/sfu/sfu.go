@@ -76,6 +76,9 @@ func New(cfg Config) (*SFU, error) {
 	// Opus for audio. Video: H.264 Constrained Baseline first (hardware encode/decode
 	// on Macs, most GPUs and phones), VP8 as fallback. Both are supported by every
 	// major browser, so any publisher's track can be forwarded to any subscriber.
+	// H.264 level 4.0 (…28): 1080p screen shares exceed level 3.1 (…1f, max 720p).
+	// Browsers offer …1f, but with level-asymmetry-allowed the sender follows our level,
+	// and Pion matches only the profile bytes, so the offer still matches.
 	if err := m.RegisterCodec(webrtc.RTPCodecParameters{
 		RTPCodecCapability: webrtc.RTPCodecCapability{MimeType: webrtc.MimeTypeOpus, ClockRate: 48000, Channels: 2, SDPFmtpLine: "minptime=10;useinbandfec=1"},
 		PayloadType:        111,
@@ -84,7 +87,7 @@ func New(cfg Config) (*SFU, error) {
 	}
 	videoFB := []webrtc.RTCPFeedback{{Type: "goog-remb"}, {Type: "ccm", Parameter: "fir"}, {Type: "nack"}, {Type: "nack", Parameter: "pli"}}
 	for _, c := range []webrtc.RTPCodecParameters{
-		{RTPCodecCapability: webrtc.RTPCodecCapability{MimeType: webrtc.MimeTypeH264, ClockRate: 90000, SDPFmtpLine: "level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=42e01f", RTCPFeedback: videoFB}, PayloadType: 102},
+		{RTPCodecCapability: webrtc.RTPCodecCapability{MimeType: webrtc.MimeTypeH264, ClockRate: 90000, SDPFmtpLine: "level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=42e028", RTCPFeedback: videoFB}, PayloadType: 102},
 		{RTPCodecCapability: webrtc.RTPCodecCapability{MimeType: webrtc.MimeTypeVP8, ClockRate: 90000, RTCPFeedback: videoFB}, PayloadType: 96},
 	} {
 		if err := m.RegisterCodec(c, webrtc.RTPCodecTypeVideo); err != nil {

@@ -58,7 +58,7 @@ function preferH264(t: RTCRtpTransceiver) {
   if (!codecs || !t.setCodecPreferences) return
   const rank = (c: RTCRtpCodec) => {
     const fmtp = c.sdpFmtpLine ?? ''
-    if (c.mimeType === 'video/H264' && fmtp.includes('packetization-mode=1')) return fmtp.includes('profile-level-id=42e01f') ? 0 : 1
+    if (c.mimeType === 'video/H264' && fmtp.includes('packetization-mode=1')) return fmtp.includes('profile-level-id=42e0') ? 0 : 1
     if (c.mimeType === 'video/VP8') return 2
     return 3
   }

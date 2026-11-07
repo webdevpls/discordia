@@ -14,6 +14,11 @@ const MAC_AUDIO = process.platform === 'darwin' && Number(require('node:os').rel
 if (MAC_AUDIO) app.commandLine.appendSwitch('enable-features', 'MacLoopbackAudioForScreenShare,MacSckSystemAudioLoopbackOverride')
 const SYSTEM_AUDIO = process.platform === 'win32' || MAC_AUDIO
 
+// O Chromium força codificação em software (OpenH264) para compartilhamento de
+// tela. No Mac isso consumia ~1 núcleo inteiro só para codificar a tela em 1080p;
+// desligado, ela vai para o encoder de hardware (VideoToolbox), como a câmera.
+app.commandLine.appendSwitch('disable-features', 'WebRtcScreenshareSwEncoding')
+
 /** Servidor em uso. Câmera, microfone e tela só são liberados para ele. */
 let server = null
 let win = null

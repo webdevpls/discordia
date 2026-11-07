@@ -2,6 +2,12 @@
 
 O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o projeto usa [versionamento semântico](https://semver.org/lang/pt-BR/).
 
+## [0.3.1] - 2026-11-07
+
+### Corrigido
+
+- **App de Mac usava um núcleo inteiro do processador ao compartilhar a tela.** O Chromium codificava a tela em software (OpenH264); agora ela vai para o encoder de hardware do Mac (VideoToolbox), como a câmera. O servidor passou a negociar H.264 nível 4.0, o necessário para 1080p.
+
 ## [0.3.0] - 2026-10-29
 
 ### Adicionado
