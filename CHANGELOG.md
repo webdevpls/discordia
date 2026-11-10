@@ -2,6 +2,13 @@
 
 O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o projeto usa [versionamento semântico](https://semver.org/lang/pt-BR/).
 
+## [0.4.0] - 2026-11-10
+
+### Adicionado
+
+- **Controles da chamada na barra de menu do Mac.** Durante uma chamada, o ícone do Discordia aparece na barra de menu (vermelho quando você está mudo ou sem som). Ao clicar, abre um painel com botões de microfone, som, câmera, tela e sair, e a lista de quem está na chamada. O painel fica aberto enquanto você liga e desliga as coisas, e só existe enquanto está aberto: fechado, não usa memória nem processador.
+- **Aviso de atualização.** No app de Mac, a barra lateral mostra um aviso em destaque quando sai uma versão nova, com o botão para baixar.
+
 ## [0.3.1] - 2026-11-07
 
 ### Corrigido

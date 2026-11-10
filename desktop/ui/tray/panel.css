@@ -1,0 +1,191 @@
+:root {
+  --text: #ececf1;
+  --muted: #9a9aa5;
+  --hover: rgba(255, 255, 255, 0.08);
+  --button: rgba(255, 255, 255, 0.07);
+  --line: rgba(255, 255, 255, 0.08);
+  --accent: #7b7bff;
+  --accent-soft: rgba(123, 123, 255, 0.2);
+  --danger: #f2555a;
+  --danger-soft: rgba(242, 85, 90, 0.18);
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --text: #18181b;
+    --muted: #6b6b76;
+    --hover: rgba(0, 0, 0, 0.06);
+    --button: rgba(0, 0, 0, 0.05);
+    --line: rgba(0, 0, 0, 0.08);
+    --accent: #5b5bd6;
+    --accent-soft: rgba(91, 91, 214, 0.15);
+    --danger: #e5484d;
+    --danger-soft: rgba(229, 72, 77, 0.14);
+    color-scheme: light;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  /* O fundo é o "vidro" do macOS (vibrancy) da própria janela. */
+  background: transparent;
+}
+body {
+  color: var(--text);
+  font: 13px/1.35 -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: default;
+}
+main {
+  padding: 12px 10px 8px;
+}
+
+header {
+  padding: 0 6px 10px;
+}
+header strong {
+  display: block;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+header small {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  border: 0;
+  background: none;
+  padding: 0;
+  cursor: default;
+}
+svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: none;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  padding: 0 2px 10px;
+  border-bottom: 1px solid var(--line);
+}
+.controls button {
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--button);
+  transition: background 0.12s, color 0.12s;
+}
+.controls button:hover {
+  background: var(--hover);
+}
+.controls button:disabled {
+  opacity: 0.4;
+}
+.controls button.on {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.controls button.off,
+.controls button.leave {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+.controls button.leave {
+  background: var(--danger);
+  color: #fff;
+}
+
+.people {
+  list-style: none;
+  margin: 0;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+  max-height: 264px;
+  overflow-y: auto;
+}
+.people li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 6px;
+  border-radius: 6px;
+}
+.avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  flex: none;
+}
+.people .name {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.people .name small {
+  color: var(--muted);
+  font-size: 12px;
+}
+.people .flags {
+  display: flex;
+  gap: 4px;
+  color: var(--muted);
+}
+.people .flags svg {
+  width: 14px;
+  height: 14px;
+}
+.people .flags .off {
+  color: var(--danger);
+}
+
+.row {
+  width: 100%;
+  height: 32px;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 6px;
+  border-radius: 6px;
+  text-align: left;
+}
+.row:hover {
+  background: var(--hover);
+}
+.row svg {
+  width: 16px;
+  height: 16px;
+  color: var(--muted);
+}

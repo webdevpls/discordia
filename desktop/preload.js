@@ -13,7 +13,15 @@ if (location.protocol === 'file:') {
   contextBridge.exposeInMainWorld('discordia', {
     platform: info.platform,
     systemAudio: info.systemAudio,
+    version: info.version,
     getSources: () => ipcRenderer.invoke('screen:sources'),
     selectSource: (id, audio) => ipcRenderer.invoke('screen:select', id, audio),
+    // Ícone da chamada na barra de menu: a página manda o estado (null = fora da
+    // chamada) e recebe os comandos clicados no menu.
+    setCallState: (state) => ipcRenderer.send('call:state', state),
+    onCallCommand: (cb) => {
+      ipcRenderer.removeAllListeners('call:command')
+      ipcRenderer.on('call:command', (_e, cmd) => cb(cmd))
+    },
   })
 }
